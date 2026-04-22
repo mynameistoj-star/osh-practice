@@ -307,17 +307,21 @@ function initSections(){
   const el=document.getElementById('sec-list');
   el.innerHTML='';
   const groups=[
-    {label:'📘 官方題庫', secs:SEC_OFFICIAL},
-    {label:'📅 歷屆學科', secs:SEC_HIST},
-    {label:'📝 術科申論', secs:SEC_SHUKE}
+    {label:'📘 官方題庫', secs:SEC_OFFICIAL, id:'official'},
+    {label:'📅 歷屆學科', secs:SEC_HIST, id:'hist'},
+    {label:'📝 術科申論', secs:SEC_SHUKE, id:'shuke'}
   ];
   groups.forEach(g=>{
+    // 群組標題和全選按鈕
     const hdr=document.createElement('div');
-    hdr.style='font-size:.72rem;font-weight:700;color:var(--accent);padding:6px 2px 3px;letter-spacing:.04em';
-    hdr.textContent=g.label;
+    hdr.style='display:flex;align-items:center;gap:6px;font-size:.72rem;font-weight:700;color:var(--accent);padding:6px 2px 3px;letter-spacing:.04em';
+    hdr.innerHTML=`<span>${g.label}</span>
+      <button onclick="selectAll('${g.id}')" style="font-size:.65rem;padding:2px 6px;border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:3px;cursor:pointer">全選</button>
+      <button onclick="clearAll('${g.id}')" style="font-size:.65rem;padding:2px 6px;border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:3px;cursor:pointer">清除</button>`;
     el.appendChild(hdr);
     g.secs.forEach(sec=>{
       const d=document.createElement('div'); d.className='sec-item';
+      d.setAttribute('data-group', g.id);
       d.innerHTML=`<input type="checkbox" checked id="s-${sec}" value="${sec}">
         <label for="s-${sec}">${sec.replace('工作項目','').substring(0,12)}</label>
         <span class="cnt">${secCounts[sec]}</span>`;
@@ -534,6 +538,14 @@ function updateHeader(){
   document.getElementById('hd-t').textContent=sesT;
   document.getElementById('hd-c').textContent=sesC;
   document.getElementById('hd-p').textContent=sesT>0?Math.round(sesC/sesT*100)+'%':'—';
+}
+
+function selectAll(groupId){
+  document.querySelectorAll(`[data-group="${groupId}"] input[type="checkbox"]`).forEach(cb=>cb.checked=true);
+}
+
+function clearAll(groupId){
+  document.querySelectorAll(`[data-group="${groupId}"] input[type="checkbox"]`).forEach(cb=>cb.checked=false);
 }
 function updateProg(){
   const fill=document.getElementById('spf');
